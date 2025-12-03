@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext();
 
@@ -11,18 +11,17 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme || 'light';
-    });
+    // Hardcode theme to 'light'
+    const theme = 'light';
 
-    useEffect(() => {
-        localStorage.setItem('theme', theme);
-        document.documentElement.setAttribute('data-theme', theme);
-    }, [theme]);
+    // Force data-theme attribute to 'light' to clean up any stale 'dark' attribute
+    React.useEffect(() => {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }, []);
 
+    // No-op toggle function to prevent errors in components that might still call it
     const toggleTheme = () => {
-        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+        console.warn('Theme toggling is disabled.');
     };
 
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -9,6 +9,7 @@ const BlogPost = () => {
     const navigate = useNavigate();
     const [blog, setBlog] = useState(null);
     const [loading, setLoading] = useState(true);
+    const iframeRef = useRef(null);
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -32,6 +33,21 @@ const BlogPost = () => {
 
         fetchBlog();
     }, [title]);
+
+    // Function to adjust iframe height based on content
+    const adjustIframeHeight = () => {
+        const iframe = iframeRef.current;
+        if (iframe && iframe.contentWindow) {
+            try {
+                // Reset height to allow shrinking
+                iframe.style.height = '0px';
+                // Set height to scrollHeight
+                iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px';
+            } catch (e) {
+                console.error("Error resizing iframe:", e);
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -63,7 +79,11 @@ const BlogPost = () => {
             </button>
 
             <article>
-                <header style={{ marginBottom: '2rem' }}>
+                <header style={{
+                    marginBottom: '2rem',
+                    backgroundColor: '#ffffff',
+                    color: 'var(--color-text-primary)'
+                }}>
                     <h1 style={{ marginBottom: '1.5rem', fontSize: '3rem' }}>{blog.title}</h1>
 
                     <div style={{ display: 'flex', gap: '1.5rem', color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
@@ -89,13 +109,20 @@ const BlogPost = () => {
                 </header>
 
                 {/* 
-          DANGEROUS: Rendering raw HTML as requested for "full power".
-          In a real production app, we would sanitize this with DOMPurify.
-        */}
-                <div
-                    className="blog-content"
-                    dangerouslySetInnerHTML={{ __html: blog.content }}
-                    style={{ fontSize: '1.125rem', lineHeight: '1.8' }}
+                  Using iframe for perfect style isolation and full HTML support.
+                  srcDoc allows us to render the raw HTML content directly.
+                */}
+                <iframe
+                    ref={iframeRef}
+                    srcDoc={blog.content}
+                    title="Blog Content"
+                    style={{
+                        width: '100%',
+                        border: 'none',
+                        overflow: 'hidden',
+                        minHeight: '400px' // Initial height
+                    }}
+                    onLoad={adjustIframeHeight}
                 />
             </article>
         </div>
