@@ -192,118 +192,66 @@ const AdminDashboard = () => {
             </div>
 
             {/* Search Bar */}
-            <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center' }}>
-                <form
-                    onSubmit={handleSearch}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        backgroundColor: '#fff',
-                        borderRadius: '100px',
-                        padding: '0.5rem',
-                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-                        width: '100%',
-                        maxWidth: '600px',
-                        border: '1px solid var(--color-border)',
-                        transition: 'transform 0.2s, box-shadow 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                >
-                    <Search size={20} style={{ marginLeft: '1.25rem', color: 'var(--color-text-secondary)', minWidth: '20px' }} />
+            <div className="search-container">
+                <form onSubmit={handleSearch} className="search-form">
+                    <Search size={20} className="search-icon" />
                     <input
                         type="text"
                         placeholder="Search by title or HTML content..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{
-                            border: 'none',
-                            outline: 'none',
-                            flex: 1,
-                            padding: '0.75rem 1rem',
-                            fontSize: '1rem',
-                            backgroundColor: 'transparent',
-                            color: 'var(--color-text-primary)'
-                        }}
+                        className="search-input"
                     />
                     {searchQuery && (
                         <button
                             type="button"
                             onClick={clearSearch}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                color: 'var(--color-text-secondary)',
-                                padding: '0.5rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                marginRight: '0.5rem'
-                            }}
+                            className="clear-search-btn"
                             title="Clear search"
                         >
                             <X size={18} />
                         </button>
                     )}
-                    <button
-                        type="submit"
-                        className="btn"
-                        style={{
-                            backgroundColor: '#0f172a', // Dark elegant button
-                            color: '#ffffff',
-                            borderRadius: '50px',
-                            padding: '0.75rem 2rem',
-                            fontWeight: '600',
-                            border: 'none',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                    >
+                    <button type="submit" className="btn search-btn">
                         Search
                     </button>
                 </form>
             </div>
 
-            <div className="card">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '1px solid var(--color-border)', textAlign: 'left' }}>
-                            <th style={{ padding: '1rem' }}>Title</th>
-                            <th style={{ padding: '1rem' }}>Date</th>
-                            <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {displayBlogs.map(blog => (
-                            <tr key={blog.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                                <td style={{ padding: '1rem' }}>{blog.title || <span className="text-muted">Untitled</span>}</td>
-                                <td style={{ padding: '1rem', color: 'var(--color-text-secondary)' }}>
-                                    {blog.createdAt?.toDate ? new Date(blog.createdAt.toDate()).toLocaleDateString() : 'N/A'}
-                                </td>
-                                <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                                        <Link to={`/blog/${encodeURIComponent(blog.title || 'untitled')}`} className="btn btn-ghost" title="View">
-                                            <Eye size={18} />
-                                        </Link>
-                                        <Link to={`/admin/edit/${blog.id}`} className="btn btn-ghost" title="Edit">
-                                            <Edit size={18} />
-                                        </Link>
-                                        <button onClick={() => handleDeleteClick(blog.id)} className="btn btn-ghost" style={{ color: 'var(--color-danger)' }} title="Delete">
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {displayBlogs.length === 0 && (
-                            <tr>
-                                <td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-secondary)' }}>
-                                    {isSearching ? "No matching posts found." : "No blog posts found. Create your first one!"}
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            <div className="card blog-list-container">
+                <div className="blog-list-header">
+                    <div className="blog-list-header-title">Title</div>
+                    <div className="blog-list-header-date">Date</div>
+                    <div className="blog-list-header-actions">Actions</div>
+                </div>
+                <div className="blog-list-body">
+                    {displayBlogs.map(blog => (
+                        <div key={blog.id} className="blog-list-item">
+                            <div className="blog-list-item-title">
+                                {blog.title || <span className="text-muted">Untitled</span>}
+                            </div>
+                            <div className="blog-list-item-date">
+                                {blog.createdAt?.toDate ? new Date(blog.createdAt.toDate()).toLocaleDateString() : 'N/A'}
+                            </div>
+                            <div className="blog-list-item-actions">
+                                <Link to={`/blog/${encodeURIComponent(blog.title || 'untitled')}`} className="btn btn-ghost" title="View">
+                                    <Eye size={18} />
+                                </Link>
+                                <Link to={`/admin/edit/${blog.id}`} className="btn btn-ghost" title="Edit">
+                                    <Edit size={18} />
+                                </Link>
+                                <button onClick={() => handleDeleteClick(blog.id)} className="btn btn-ghost" style={{ color: 'var(--color-danger)' }} title="Delete">
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {displayBlogs.length === 0 && (
+                        <div className="blog-list-empty">
+                            {isSearching ? "No matching posts found." : "No blog posts found. Create your first one!"}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {!isSearching && (
